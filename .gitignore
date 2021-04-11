@@ -14,4 +14,7 @@ wee3/hw/.classpath
 week3/hw/.project
 week3/hw/.factorypath
 week3/hw/.classpath
+week3/hw/
+
 *ipynb
+*.xmind
