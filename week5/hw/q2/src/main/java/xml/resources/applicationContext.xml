@@ -11,13 +11,13 @@
     <bean id="student11"
           class="spring01.Student">
         <property name="id" value="11" />
-        <property name="name" value="test11" />
+        <property name="name" value="KK11" />
     </bean>
     
     <bean id="student12"
           class="spring01.Student">
         <property name="id" value="12" />
-        <property name="name" value="test12" />
+        <property name="name" value="KK12" />
     </bean>
     
     <bean id="class1" class="spring02.Klass">
