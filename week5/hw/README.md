@@ -5,5 +5,5 @@
 
 10. Study JDBC interface and database connection pool, understand their design and applications   
 1/ using JDBC interface, achieve database CRUD functions    
-2/ improve the above using Transaction, PrepareStatement，Spring Batch  
-3/ configure Hikari connection pool，improve the above  
+2/ improve the above by Transaction, PrepareStatement，Spring Batch  
+3/ improve the above by configuring Hikari connection pool    
