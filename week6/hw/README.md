@@ -1,4 +1,5 @@
 #### optimization with SQL
+
 Design a table for a E-commerce scenario, including user, commodities, orders.  
 
 ```
