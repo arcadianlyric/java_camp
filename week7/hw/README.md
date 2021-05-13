@@ -1,11 +1,11 @@
 #### optimization with SQL
 
-2. insert 1 million dummy orders, testing the efficiency of different methods on insertion.  
-9. Read/Write Splitting, dynamic data source routing v1.0 
-10. Read/Write Splitting, database frame v2.0
+2. insert 1 million dummy orders, testing the efficiency of different methods on insertion.   
+9. Read/Write Splitting, dynamic data source v1.0   
+10. Read/Write Splitting, database frame v2.0  
 
-2. insert 1 million dummy orders, testing the efficiency of different methods on insertion. 
-User table as:
+2. insert 1 million dummy orders, testing the efficiency of different methods on insertion.  
+User table as:  
 ```
 CREATE TABLE Users(
     user_id INT PRIMARY KEY AUTO_INCREMENT, 
@@ -72,5 +72,66 @@ insert with prepareStatment, addBatch
            close(conn, pstmt, rs);
         }
         return affectRowCount;
+    }
+```
+
+9. Read/Write Splitting, dynamic data source v1.0  
+with AbstractRoutingDataSource  
+```
+public class DynamicDataSource extends AbstractRoutingDataSource {
+    @Override
+    protected Object determineCurrentLookupKey() {
+        return DataSourceConstants.DS_KEY_MASTER;
+    }
+}
+```
+set configuration   
+```
+@Configuration
+public class DataSourceConfig {
+
+    @Bean(DataSourceConstants.DS_KEY_MASTER)
+    @ConfigurationProperties(prefix = "spring.datasource.master")
+    public DataSource masterDataSource() {
+        return DataSourceBuilder.create().build();
+    }
+
+    @Bean(DataSourceConstants.DS_KEY_SLAVE)
+    @ConfigurationProperties(prefix = "spring.datasource.slave")
+    public DataSource slaveDataSource() {
+        return DataSourceBuilder.create().build();
+    }
+
+    @Bean
+    @Primary
+    public DataSource dynamicDataSource() {
+        Map<Object, Object> dataSourceMap = new HashMap<>(2);
+        dataSourceMap.put(DataSourceConstants.DS_KEY_MASTER, masterDataSource());
+        dataSourceMap.put(DataSourceConstants.DS_KEY_SLAVE, slaveDataSource());
+
+        DynamicDataSource dynamicDataSource = new DynamicDataSource();
+        dynamicDataSource.setTargetDataSources(dataSourceMap);
+        dynamicDataSource.setDefaultTargetDataSource(masterDataSource());
+        return dynamicDataSource;
+    }
+}
+```
+saving to DynamicDataSourceContextHolder
+```
+public class DynamicDataSourceContextHolder {
+
+    private static final ThreadLocal<String> DATASOURCE_CONTEXT_KEY_HOLDER = new ThreadLocal<>();
+
+    public static void setContextKey(String key){
+        DATASOURCE_CONTEXT_KEY_HOLDER.set(key);
+    }
+
+    public static String getContextKey(){
+        String key = DATASOURCE_CONTEXT_KEY_HOLDER.get();
+        return key == null?DataSourceConstants.DS_KEY_MASTER:key;
+    }
+
+    public static void removeContextKey(){
+        DATASOURCE_CONTEXT_KEY_HOLDER.remove();
     }
 ```
